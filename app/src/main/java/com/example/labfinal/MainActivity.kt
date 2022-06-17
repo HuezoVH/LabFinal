@@ -12,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import java.lang.Exception
+import kotlin.properties.Delegates
+import kotlin.Int as Int
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private var iterator = 0
     
     private var files : MutableList<DocumentFile> = mutableListOf()
+    private var totalfiles = 0
 
     companion object{
         var OPEN_DIRECTORY_REQUEST_CODE = 1
@@ -35,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE)
 
         buttonPlay = findViewById(R.id.buttonPlay)
@@ -68,7 +71,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonNext.setOnClickListener{
-            if(iterator+1 > files.size-1){
+            totalfiles = files.size
+            if(iterator+1 > totalfiles-1){
                 iterator = 0
                 mediaPlayer.stop()
                 mediaPlayer = MediaPlayer.create(context,files[iterator].uri)
@@ -105,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         if(requestCode == OPEN_DIRECTORY_REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK){
                 
-                var directoryUri = data?.data ?:return
+                val directoryUri = data?.data ?:return
                 val rootTree = DocumentFile.fromTreeUri(this,directoryUri )
                 
                 for(file in rootTree!!.listFiles()){
